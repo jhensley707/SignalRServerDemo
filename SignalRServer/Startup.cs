@@ -28,6 +28,7 @@ namespace SignalRServer
             services.AddHostedService<QueuedHostedService>();
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            //services.AddCors(o => o.AddPolicy("CorsPolicy", builder => { builder.AllowAnyMethod().AllowAnyHeader().WithOrigins("http://localhost:44309"); }));
             services.AddSignalR();
         }
 
@@ -44,8 +45,11 @@ namespace SignalRServer
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseMvc();
+
+            //app.UseCors("CorsPolicy");
+            app.UseCors(builder => { builder.AllowAnyMethod().AllowAnyHeader().AllowCredentials().WithOrigins("https://localhost:44309"); });
 
             app.UseSignalR((routes) =>
             {

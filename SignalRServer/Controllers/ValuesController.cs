@@ -47,7 +47,7 @@ namespace SignalRServer.Controllers
                     var scopedServices = scope.ServiceProvider;
                     //var db = scopedServices.GetRequiredService<AppDbContext>();
 
-                    for (int delayLoop = 1; delayLoop < 4; delayLoop++)
+                    for (int delayLoop = 0; delayLoop <= 100; delayLoop += 10)
                     {
                         try
                         {
