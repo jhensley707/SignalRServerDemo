@@ -40,6 +40,7 @@ namespace SignalRServer.Controllers
 
             Queue.QueueBackgroundWorkItem(async token =>
             {
+                var rand = new Random();
                 var guid = Guid.NewGuid().ToString();
 
                 using (var scope = _serviceScopeFactory.CreateScope())
@@ -52,28 +53,18 @@ namespace SignalRServer.Controllers
                         try
                         {
                             _logger.LogInformation($"Delay loop {delayLoop}");
-                            //db.Messages.Add(
-                            //    new Message()
-                            //    {
-                            //        Text = $"Queued Background Task {guid} has " +
-                            //            $"written a step. {delayLoop}/3"
-                            //    });
-                            //await db.SaveChangesAsync();
                             await _progressHub.Clients.All.ShowProgress(delayLoop);
                         }
                         catch (Exception ex)
                         {
-                            _logger.LogError(ex,
-                                "An error occurred writing to the " +
-                                "database. Error: {Message}", ex.Message);
+                            _logger.LogError(ex, $"An error occurred sending progress. Error: {ex.Message}");
                         }
 
-                        await Task.Delay(TimeSpan.FromSeconds(5), token);
+                        await Task.Delay(TimeSpan.FromSeconds(rand.Next(1, 5)), token);
                     }
                 }
 
-                _logger.LogInformation(
-                    "Queued Background Task {Guid} is complete. 3/3", guid);
+                _logger.LogInformation("Queued Background Task {Guid} is complete.", guid);
             });
 
             return new string[] { "value1", "value2" };

@@ -11,12 +11,9 @@ namespace SignalRServer
     {
         private readonly ILogger<LongRunningHub> _logger;
 
-        public IBackgroundTaskQueue Queue { get; }
-
-        public LongRunningHub(ILogger<LongRunningHub> logger, IBackgroundTaskQueue queue)
+        public LongRunningHub(ILogger<LongRunningHub> logger)
         {
             _logger = logger;
-            Queue = queue;
         }
 
         /// <summary>
@@ -48,6 +45,7 @@ namespace SignalRServer
         /// <returns></returns>
         public async Task SubmitTaskRequest(TaskRequest request)
         {
+            var rand = new Random();
             var guid = Guid.NewGuid().ToString();
 
             for (int delayLoop = 0; delayLoop <= 100; delayLoop += 10)
@@ -55,28 +53,19 @@ namespace SignalRServer
                 try
                 {
                     _logger.LogInformation($"Delay loop {delayLoop}");
-                    //db.Messages.Add(
-                    //    new Message()
-                    //    {
-                    //        Text = $"Queued Background Task {guid} has " +
-                    //            $"written a step. {delayLoop}/3"
-                    //    });
-                    //await db.SaveChangesAsync();
                     await ShowProgress(delayLoop);
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex,
-                        "An error occurred writing to the " +
-                        "database. Error: {Message}", ex.Message);
+                    _logger.LogError(ex, $"An error occurred sending progress. Error: {ex.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(5));
+                await Task.Delay(TimeSpan.FromSeconds(rand.Next(1, 5)));
             }
 
             await ReturnTaskResult(new TaskResult { Name = request.Name, TaskId = guid });
             _logger.LogInformation(
-                "LongRunning Task {Guid} is complete. 3/3", guid);
+                "LongRunning Task {Guid} is complete.", guid);
         }
     }
 }

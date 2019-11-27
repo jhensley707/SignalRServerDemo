@@ -55,6 +55,7 @@ namespace SignalRServer
             {
                 routes.MapHub<ProgressHub>("/hubs/progress");
                 routes.MapHub<LongRunningHub>("/hubs/longrunning");
+                routes.MapHub<BackgroundTaskHub>("/hubs/backgroundtask");
             });
         }
     }
