@@ -54,6 +54,7 @@ namespace SignalRServer
             app.UseSignalR((routes) =>
             {
                 routes.MapHub<ProgressHub>("/hubs/progress");
+                routes.MapHub<LongRunningHub>("/hubs/longrunning");
             });
         }
     }
